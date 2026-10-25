@@ -5,8 +5,8 @@ from xmi import create_xmi
 import shutil
 
 
-inputfile = Path('PDS')
-outputfile = Path('PDS.XMIT')
+inputfile = Path('TEXTS.PDS')
+outputfile = Path('TEXTS.PDS.XMIT')
 
 tmppds = Path(sys.argv[1])
 
