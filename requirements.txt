@@ -1,5 +1,9 @@
 ebcdic==2.0.1
+markdown-it-py==4.2.0
+mdurl==0.1.2
 prettytable==3.18.0
+Pygments==2.21.0
 python-magic==0.4.27
+rich==15.0.0
 wcwidth==0.9.4
 xmi-reader==1.0.5
