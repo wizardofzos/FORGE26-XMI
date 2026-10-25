@@ -3,7 +3,7 @@ name: Build XMIT and add to new release demo for FORGE26
 on:
   push:
     branches:
-      - master
+      - main
 
 permissions:
   contents: write
