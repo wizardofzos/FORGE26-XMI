@@ -1,0 +1,5 @@
+ebcdic==2.0.1
+prettytable==3.18.0
+python-magic==0.4.27
+wcwidth==0.9.4
+xmi-reader==1.0.5

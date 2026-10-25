@@ -1,0 +1,230 @@
+                     X M I   P R E S E N T A T I O N
+                   (z/OS 70-Column Terminal Edition)
+
+SOURCE: https://xmi.readthedocs.io/en/latest/
+FORMAT: NETDATA / XMIT / AWS / HET concepts adapted
+STYLE : ISPF / TSO terminal simulation
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+                          1. WHAT IS XMI?
+-------------------------------------------------------------------------------
+
+XMI is a MAINFRAME DATA TRANSFER CONTAINER FORMAT.
+
+Also known as:
+  - XMIT file
+  - NETDATA stream
+  - TRANSMIT dataset
+  - AWS / HET (tape-style archives)
+
+PURPOSE:
+  Move datasets between systems (z/OS, VM, emulators)
+
+-------------------------------------------------------------------------------
+                      2. FILE STRUCTURE
+-------------------------------------------------------------------------------
+
+XMI FILE = CONTROL RECORDS + DATASETS
+
+CONTROL RECORD TYPES:
+  INMR01 -> HEADER (metadata, sender/receiver)
+  INMR02 -> DATASET CONTROL BLOCK
+  INMR03 -> DATA ATTRIBUTES (RECFM, LRECL, DSORG)
+  INMR04 -> USER EXIT DATA (optional)
+  INMR06 -> END OF FILE MARKER
+  INMR07 -> INFO / NOTIFICATION
+
+-------------------------------------------------------------------------------
+                    3. THINK OF IT LIKE THIS
+-------------------------------------------------------------------------------
+
+        +--------------------------------------+
+        | INMR01  HEADER                       |
+        +--------------------------------------+
+        | INMR02  DATASET CONTROL              |
+        +--------------------------------------+
+        | INMR03  ATTRIBUTES                  |
+        +--------------------------------------+
+        | INMR02  (NEXT DATASET)              |
+        +--------------------------------------+
+        | INMR06  END OF FILE                 |
+        +--------------------------------------+
+
+-------------------------------------------------------------------------------
+                    4. DATASET ATTRIBUTES
+-------------------------------------------------------------------------------
+
+Each dataset contains:
+
+  DSORG   -> PS or PDS
+  LRECL   -> logical record length (e.g. 80)
+  RECFM   -> FB, VB, F, V, U
+  SIZE    -> dataset size
+  CODEC   -> EBCDIC / ASCII handling
+
+COMMON MAINFRAME DEFAULT:
+  LRECL = 80
+
+-------------------------------------------------------------------------------
+                      5. RECFM QUICK REF
+-------------------------------------------------------------------------------
+
+F  = Fixed
+V  = Variable
+U  = Undefined
+
+Modifiers:
+B = Blocked
+A = ASA control chars
+M = Machine control chars
+
+Examples:
+  FB = Fixed Blocked
+  VB = Variable Blocked
+
+-------------------------------------------------------------------------------
+                   6. ENCODING NOTES
+-------------------------------------------------------------------------------
+
+XMI is typically:
+
+  - EBCDIC encoded
+  - binary safe transfer format
+  - FTP requires BINARY mode
+
+CONVERSION:
+  EBCDIC -> UTF-8 after extraction
+
+-------------------------------------------------------------------------------
+                  7. PYTHON XMI LIBRARY
+-------------------------------------------------------------------------------
+
+FROM xmi.readthedocs.io:
+
+FEATURES:
+  - read XMI / AWS / HET
+  - list datasets
+  - extract all contents
+  - parse PDS structures
+  - convert encodings
+  - export metadata
+
+CORE API:
+  open_file()
+  list_all()
+  extract_all()
+
+-------------------------------------------------------------------------------
+                      8. USAGE: EXTRACT
+-------------------------------------------------------------------------------
+
+GOAL:
+  Turn XMI file into usable datasets
+
+STEPS:
+
+  1. OPEN FILE
+     x = xmi.open_file("input.xmi")
+
+  2. INSPECT CONTENTS
+     x.list_all()
+
+  3. EXTRACT EVERYTHING
+     x.extract_all(output="./out")
+
+RESULT:
+  - datasets restored
+  - PDS members unpacked
+  - files written locally
+
+-------------------------------------------------------------------------------
+                      9. USAGE: CREATE
+-------------------------------------------------------------------------------
+
+GOAL:
+  Build XMI file from datasets
+
+TYPICAL FLOW:
+
+  1. PREPARE DATASETS
+     - sequential files
+     - PDS members
+
+  2. PACKAGE INTO XMI
+     x = xmi.create()
+
+  3. ADD DATASETS
+     x.add("MY.DATASET1", "file1.txt")
+     x.add("MY.PDS(MEMBER1)", "member1.txt")
+
+  4. WRITE OUTPUT
+     x.write("output.xmi")
+
+RESULT:
+  - portable mainframe archive
+  - ready for transfer via FTP / tools
+
+-------------------------------------------------------------------------------
+                    10. PDS STRUCTURE
+-------------------------------------------------------------------------------
+
+SEQUENTIAL:
+  single dataset stream
+
+PDS:
+  directory-like structure
+
+STRUCTURE:
+  PDS
+   +-- MEMBER1
+   +-- MEMBER2
+   +-- MEMBER3
+
+-------------------------------------------------------------------------------
+                    11. WHY XMI IS COMPLEX
+-------------------------------------------------------------------------------
+
+Because it handles:
+
+  - multiple dataset types
+  - control + data interleaving
+  - EBCDIC encoding
+  - hierarchical PDS structures
+  - legacy compatibility (IEBCOPY/XMIT)
+
+BUT:
+  Extraction reconstructs clean datasets
+
+-------------------------------------------------------------------------------
+                    12. SIMPLIFIED MODEL
+-------------------------------------------------------------------------------
+
+XMI FILE
+  |
+  +--> HEADER (INMR01)
+  |
+  +--> DATASETS (INMR02/03)
+  |
+  +--> MEMBERS (PDS)
+  |
+  +--> OUTPUT FILES
+
+LIKE:
+  ZIP archive for mainframe datasets
+
+-------------------------------------------------------------------------------
+                        13. FINAL SUMMARY
+-------------------------------------------------------------------------------
+
+XMI IS:
+
+  - a transport container format
+  - a dataset packaging system
+  - a control-record based archive
+  - a bridge between mainframes
+
+KEY IDEA:
+  "It reliably moves datasets across systems"
+
+-------------------------------------------------------------------------------
